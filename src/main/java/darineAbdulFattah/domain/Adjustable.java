@@ -9,5 +9,7 @@ package darineAbdulFattah.domain;
  * @author USER
  */
 public interface Adjustable {
+     double adjust(double factor);
+
     
 }
