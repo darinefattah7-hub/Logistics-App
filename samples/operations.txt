@@ -1,0 +1,6 @@
+Create Warehouse,W4,Baalbek,Apple,25 kg,Orange,20 kg,Mango,5 kg
+Add Product,Beirut,Mango,5 kg,Strawberry,30 box
+Ship,Zahle,Beirut,Apple,8 kg
+Ship,Zahle,Baalbek,Banana,8 kg
+Ship,Zahle,Tripoli,Grapes,8 kg
+Ship,Zahle,Saida,Apple,8 kg
