@@ -16,7 +16,7 @@ import java.io.FileNotFoundException;
  * @author USER
  */
 public class FileInputReader implements InputReader {
-    private String filename;
+    private final String filename;
     
     /**
      * Constructor
