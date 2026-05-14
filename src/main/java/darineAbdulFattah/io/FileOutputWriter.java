@@ -4,6 +4,7 @@
  */
 package darineAbdulFattah.io;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  * @author USER
  */
 public class FileOutputWriter implements OutputWriter {
-    private String filename;
+    private final String filename;
     
     /**
      * Constructor
@@ -22,8 +23,13 @@ public class FileOutputWriter implements OutputWriter {
         this.filename = filename;
     }
     
-    @Override
+     @Override
     public void writeLines(List<String> lines) throws IOException {
+        File outputFile = new File(filename);
+        File parent = outputFile.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             for (String line : lines) {
                 writer.write(line);
