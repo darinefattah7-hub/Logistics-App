@@ -3,7 +3,8 @@
  */
 
 package oop1.darineabdulfattah_miniproject;
-import darineAbdulfattah.domain.*;
+
+import darineAbdulFattah.domain.*;
 import darineAbdulFattah.io.*;
 import darineAbdulFattah.processing.*;
 
@@ -11,18 +12,22 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+
 /**
  *
  * @author USER
  */
 public class LogisticsApp {
  
-    
-  private WarehouseManager warehouseManager;
+    private WarehouseManager warehouseManager;
     private ShipmentProcessor shipmentProcessor;
     private ReportGenerator reportGenerator;
     private BufferedReader consoleReader;
     
+    // Constants for file paths
+    private static final String DEFAULT_WAREHOUSES_FILE = "Samples/warehouses.txt";
+    private static final String DEFAULT_INVENTORY_FILE = "Samples/inventory.txt";
+    private static final String DEFAULT_OPERATIONS_FILE = "Samples/operations.txt";
 
     public LogisticsApp() {
         this.warehouseManager = new WarehouseManager();
@@ -39,6 +44,10 @@ public class LogisticsApp {
     public void run() {
         try {
             System.out.println("=== Warehouse Logistics System ===\n");
+            
+            // Show current working directory for debugging
+            System.out.println("Working Directory: " + System.getProperty("user.dir"));
+            System.out.println();
             
             // Initial data loading
             loadInitialData();
@@ -63,17 +72,37 @@ public class LogisticsApp {
         if (choice.equals("1")) {
             loadFromFiles();
         } else {
-            System.out.println("Manual entry mode not implemented in initial load.");
-            System.out.println("Proceeding with empty system...");
+            loadManually();
         }
     }
     
+    private void loadManually() throws IOException {
+        System.out.println("\n=== Manual Data Entry ===");
+        System.out.println("Enter warehouse data (type 'END' to finish):");
+        
+        ConsoleInputReader consoleInputReader = new ConsoleInputReader();
+        List<String> lines = consoleInputReader.readLines();
+        
+        for (String line : lines) {
+            String[] parts = line.split(",");
+            if (parts.length >= 2) {
+                String id = parts[0].trim();
+                String name = parts[1].trim();
+                warehouseManager.createWarehouse(id, name);
+            }
+        }
+        
+        System.out.println("✓ Loaded " + warehouseManager.getAllWarehouses().size() + " warehouses manually");
+    }
+    
     private void loadFromFiles() throws IOException {
+        System.out.println("\n=== Loading from Files ===");
+        
         // Load warehouses
-        System.out.print("Enter warehouses file path (or press Enter for 'warehouses.txt'): ");
+        System.out.print("Enter warehouses file path (or press Enter for default): ");
         String warehousesFile = consoleReader.readLine().trim();
         if (warehousesFile.isEmpty()) {
-            warehousesFile = "warehouses.txt";
+            warehousesFile = DEFAULT_WAREHOUSES_FILE;
         }
         
         try {
@@ -83,13 +112,14 @@ public class LogisticsApp {
             System.out.println("✓ Loaded " + warehouseLines.size() + " warehouses");
         } catch (IOException e) {
             System.out.println("⚠ Could not load warehouses file: " + e.getMessage());
+            System.out.println("   Make sure the file exists at: " + warehousesFile);
         }
         
         // Load inventory
-        System.out.print("Enter inventory file path (or press Enter for 'inventory.txt'): ");
+        System.out.print("Enter inventory file path (or press Enter for default): ");
         String inventoryFile = consoleReader.readLine().trim();
         if (inventoryFile.isEmpty()) {
-            inventoryFile = "inventory.txt";
+            inventoryFile = DEFAULT_INVENTORY_FILE;
         }
         
         try {
@@ -102,10 +132,10 @@ public class LogisticsApp {
         }
         
         // Load operations
-        System.out.print("Enter operations file path (or press Enter for 'operations.txt'): ");
+        System.out.print("Enter operations file path (or press Enter for default): ");
         String operationsFile = consoleReader.readLine().trim();
         if (operationsFile.isEmpty()) {
-            operationsFile = "operations.txt";
+            operationsFile = DEFAULT_OPERATIONS_FILE;
         }
         
         try {
@@ -131,14 +161,37 @@ public class LogisticsApp {
         }
     }
     
+    /**
+     * Helper method to convert a string like "10 kg" to a Measurement object
+     */
+    private Measurement createMeasurementFromString(String measurementStr) {
+        // Split the string into value and unit (e.g., "10 kg" -> ["10", "kg"])
+        String[] parts = measurementStr.trim().split(" ");
+        
+        if (parts.length >= 2) {
+            try {
+                double value = Double.parseDouble(parts[0]);
+                String unit = parts[1];
+                return new Measurement(value, unit);
+            } catch (NumberFormatException e) {
+                System.err.println("Error parsing measurement value: " + parts[0]);
+                return new Measurement(0, "kg");
+            }
+        } else {
+            System.err.println("Invalid measurement format: " + measurementStr);
+            return new Measurement(0, "kg");
+        }
+    }
+    
     private void processInventoryLines(List<String> lines) {
         for (String line : lines) {
             String[] parts = line.split(",", 3);
             if (parts.length >= 3) {
                 String warehouseId = parts[0].trim();
                 String productName = parts[1].trim();
-                String measurement = parts[2].trim();
+                String measurementStr = parts[2].trim();
                 
+                Measurement measurement = createMeasurementFromString(measurementStr);
                 Product product = new Product(productName, measurement);
                 warehouseManager.addProductToWarehouse(warehouseId, product);
             }
@@ -172,7 +225,9 @@ public class LogisticsApp {
         for (int i = 3; i < parts.length; i += 2) {
             if (i + 1 < parts.length) {
                 String productName = parts[i].trim();
-                String measurement = parts[i + 1].trim();
+                String measurementStr = parts[i + 1].trim();
+                
+                Measurement measurement = createMeasurementFromString(measurementStr);
                 Product product = new Product(productName, measurement);
                 warehouse.addProduct(product);
             }
@@ -188,7 +243,9 @@ public class LogisticsApp {
             for (int i = 2; i < parts.length; i += 2) {
                 if (i + 1 < parts.length) {
                     String productName = parts[i].trim();
-                    String measurement = parts[i + 1].trim();
+                    String measurementStr = parts[i + 1].trim();
+                    
+                    Measurement measurement = createMeasurementFromString(measurementStr);
                     Product product = new Product(productName, measurement);
                     warehouse.addProduct(product);
                 }
@@ -273,9 +330,10 @@ public class LogisticsApp {
         String productName = consoleReader.readLine().trim();
         
         System.out.print("Enter quantity (e.g., '10 kg'): ");
-        String quantity = consoleReader.readLine().trim();
+        String quantityStr = consoleReader.readLine().trim();
         
-        Product product = new Product(productName, quantity);
+        Measurement measurement = createMeasurementFromString(quantityStr);
+        Product product = new Product(productName, measurement);
         warehouse.addProduct(product);
         System.out.println("✓ Product added successfully!");
     }
@@ -296,7 +354,6 @@ public class LogisticsApp {
         ShipmentRecord record = shipmentProcessor.processShipment(source, dest, productName, quantity);
         
         System.out.println("\nShipment Result:");
-        System.out.println("Status: " + record.getStatus());
         System.out.println(record.toString());
     }
     
@@ -304,7 +361,7 @@ public class LogisticsApp {
         System.out.println("\n=== Warehouse Inventories ===");
         
         for (Warehouse warehouse : warehouseManager.getAllWarehouses().values()) {
-            System.out.println("\n" + warehouse.getName() + " (" + warehouse.getId() + "):");
+            System.out.println("\n" + warehouse.getName() + ":");
             
             if (warehouse.getInventory().isEmpty()) {
                 System.out.println("  (empty)");
@@ -357,17 +414,15 @@ public class LogisticsApp {
                 break;
             case "4":
                 reportGenerator.generateShipmentReport(shipmentProcessor, 
-                    new FileOutputWriter("Report.txt"));
+                    new FileOutputWriter("output/Report.txt"));
                 reportGenerator.generateWarehouseList(warehouseManager, 
-                    new FileOutputWriter("Warehouses_out.txt"));
+                    new FileOutputWriter("output/Warehouses_out.txt"));
                 reportGenerator.generateInventoryList(warehouseManager, 
-                    new FileOutputWriter("Inventory_out.txt"));
-                System.out.println("✓ All reports generated to files");
+                    new FileOutputWriter("output/Inventory_out.txt"));
+                System.out.println("✓ All reports generated to 'output' folder");
                 break;
             default:
                 System.out.println("Invalid choice");
         }
     }
-       
-    }
-
+}
