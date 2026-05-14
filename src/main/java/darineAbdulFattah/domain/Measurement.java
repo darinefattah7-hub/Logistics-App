@@ -52,9 +52,11 @@ public class Measurement implements Adjustable {
  
     @Override
     public String toString() {
-        return value + "" + unit;
+        if (value == Math.rint(value)) {
+            return String.format("%.0f %s", value, unit);
+        }
+        return String.format("%.2f %s", value, unit);
     }
-
     
     @Override
     public boolean equals(Object obj) {
@@ -71,32 +73,32 @@ public class Measurement implements Adjustable {
         return roundedThis == roundedOther && this.unit.equalsIgnoreCase(other.unit);
     }
 
-    @Override
-    public int hashCode() {
-        double rounded = Math.round(value * 100.0) / 100.0;
-        return Objects.hash(rounded, unit.toLowerCase());
-    }
-
-    // Add another Measurement's quantity to this one
     
-    //re
-    public void addMeasurement(Measurement other) {
-        if (!this.unit.equalsIgnoreCase(other.unit)) {
-            throw new IllegalArgumentException(
-                "Cannot add measurements with different units: " 
-                + this.unit + " vs " + other.unit
-            );
-        }
+      public void addMeasurement(Measurement other) {
         this.value += other.value;
     }
 
-      public  double getValue() {
-    return value;
+    @Override
+    public double adjust(double factor) {
+        this.value *= factor;
+        return this.value;
+    }
+
+    double value() {
+        return value;
+    }
+
+    String unit() {
+        return unit;
+    }
+
+    Measurement copy() {
+        return new Measurement(value, unit);
+    }
+
+    boolean hasSameUnit(Measurement other) {
+        return unit.equalsIgnoreCase(other.unit);
+    }
+
 }
 
-public String getUnit() {
-    return unit;
-    
-}
-
-}
