@@ -1,1 +1,5 @@
 
+W1,Zahle
+W2,Beirut
+W3,Tripoli
+ 
