@@ -19,7 +19,7 @@ Objective
 
 ---
 
-## 🧱 Domain Model (Reused from Quiz)
+ Domain Model (Reused from Quiz)
 
 The following classes are reused from a prior quiz and extended where necessary:
 
@@ -29,26 +29,17 @@ The following classes are reused from a prior quiz and extended where necessary:
 - `Warehouse` – manages inventory and shipment lists
 - `Adjustable` – interface for adjusting measurements
 
-> ✅ All encapsulation, aggregation behavior, and equality rules are preserved.
+ All encapsulation, aggregation behavior, and equality rules are preserved.
 
 ---
 
-## 🧩 Architecture
+ Architecture
 
-The project is structured into clear layers:
-
-| Layer | Responsibility |
-|-------|----------------|
-| **Domain** | Core business entities (Product, Warehouse, etc.) |
-| **Processing** | Shipment logic, inventory aggregation, reporting |
-| **I/O** | Abstract `InputReader` / `OutputWriter` + console/file implementations |
-| **Application** | Main class, menu handling, component wiring |
-
-> 🔒 **No direct dependency** between domain layer and concrete I/O classes.
+ No direct dependency between domain layer and concrete I/O classes.
 
 ---
 
-## 📁 Input File Formats
+Input File Formats
 
 ### `warehouses.txt`
 W1, Zahle
@@ -75,34 +66,10 @@ text
 
 ---
 
-## 🖥️ Interactive CLI Menu
 
-After loading initial data, the user is presented with a menu:
-Show all warehouses
+Output Files
 
-Show inventory of a warehouse
-
-Add product to warehouse
-
-Create new warehouse
-
-Process shipment
-
-Generate shipment report
-
-Export updated inventory and warehouses
-
-Exit
-
-text
-
-All actions reuse the same logic as file-based input.
-
----
-
-## 📤 Output Files
-
-### `report.txt`
+`report.txt`
 Successful Shipments: 1
 Partial Shipments: 1
 Failed Shipments: 2
@@ -154,7 +121,7 @@ text
 
 ---
 
-## ▶️ How to Run
+▶️ How to Run
 
 1. Compile all `.java` files:
    ```bash
@@ -171,29 +138,9 @@ Interactive console input
 
 Follow the menu to manage warehouses and shipments.
 
-✅ Learning Outcomes
-By completing this project, the following skills are demonstrated:
 
-Applying OOP principles (encapsulation, inheritance, polymorphism)
 
-Programming to interfaces, not implementations
 
-Using Java collections for in-memory data processing
-
-Separating business logic from I/O
-
-Designing a maintainable and extensible application
-
-📅 Deadline & Submission
-Due Date: 17th of May 2026
-
-Submission: Via Teams (only)
-
-Individual project – no plagiarism tolerated
-
-👤 Author
-[Your Full Name]
-[Your Student ID / Email]
 
 📄 License
 This project is for educational purposes only.
