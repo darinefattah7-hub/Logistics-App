@@ -1,7 +1,7 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package oop1.darineabdulfattah_miniproject;
 
 import darineAbdulFattah.domain.*;
@@ -13,21 +13,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+
 /**
  *
  * @author USER
  */
 public class LogisticsApp {
  
+ 
     private WarehouseManager warehouseManager;
     private ShipmentProcessor shipmentProcessor;
     private ReportGenerator reportGenerator;
     private BufferedReader consoleReader;
     
-    // Constants for file paths
-    private static final String DEFAULT_WAREHOUSES_FILE = "Samples/warehouses.txt";
-    private static final String DEFAULT_INVENTORY_FILE = "Samples/inventory.txt";
-    private static final String DEFAULT_OPERATIONS_FILE = "Samples/operations.txt";
+    private static final String DEFAULT_WAREHOUSES_FILE = "samples/warehouses.txt";
+    private static final String DEFAULT_INVENTORY_FILE = "samples/inventory.txt";
+    private static final String DEFAULT_OPERATIONS_FILE = "samples/operations.txt";
 
     public LogisticsApp() {
         this.warehouseManager = new WarehouseManager();
@@ -44,17 +45,8 @@ public class LogisticsApp {
     public void run() {
         try {
             System.out.println("=== Warehouse Logistics System ===\n");
-            
-            // Show current working directory for debugging
-            System.out.println("Working Directory: " + System.getProperty("user.dir"));
-            System.out.println();
-            
-            // Initial data loading
             loadInitialData();
-            
-            // Interactive menu
             showMenu();
-            
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
             e.printStackTrace();
@@ -67,7 +59,7 @@ public class LogisticsApp {
         System.out.println("2. Enter manually");
         System.out.print("Choice: ");
         
-        String choice = consoleReader.readLine().trim();
+        String choice = readConsoleLine();
         
         if (choice.equals("1")) {
             loadFromFiles();
@@ -78,29 +70,26 @@ public class LogisticsApp {
     
     private void loadManually() throws IOException {
         System.out.println("\n=== Manual Data Entry ===");
+
+        ConsoleInputReader consoleInputReader = new ConsoleInputReader(consoleReader);
+
         System.out.println("Enter warehouse data (type 'END' to finish):");
+        processWarehouseLines(consoleInputReader.readLines());
+
+        System.out.println("Enter inventory data (type 'END' to finish):");
+        processInventoryLines(consoleInputReader.readLines());
+
+        System.out.println("Enter operations data (type 'END' to finish):");
+        processOperationLines(consoleInputReader.readLines());
         
-        ConsoleInputReader consoleInputReader = new ConsoleInputReader();
-        List<String> lines = consoleInputReader.readLines();
-        
-        for (String line : lines) {
-            String[] parts = line.split(",");
-            if (parts.length >= 2) {
-                String id = parts[0].trim();
-                String name = parts[1].trim();
-                warehouseManager.createWarehouse(id, name);
-            }
-        }
-        
-        System.out.println("✓ Loaded " + warehouseManager.getAllWarehouses().size() + " warehouses manually");
+        System.out.println("Loaded " + warehouseManager.getAllWarehouses().size() + " warehouses manually");
     }
     
     private void loadFromFiles() throws IOException {
         System.out.println("\n=== Loading from Files ===");
         
-        // Load warehouses
         System.out.print("Enter warehouses file path (or press Enter for default): ");
-        String warehousesFile = consoleReader.readLine().trim();
+        String warehousesFile = readConsoleLine();
         if (warehousesFile.isEmpty()) {
             warehousesFile = DEFAULT_WAREHOUSES_FILE;
         }
@@ -109,15 +98,14 @@ public class LogisticsApp {
             InputReader warehouseReader = new FileInputReader(warehousesFile);
             List<String> warehouseLines = warehouseReader.readLines();
             processWarehouseLines(warehouseLines);
-            System.out.println("✓ Loaded " + warehouseLines.size() + " warehouses");
+            System.out.println("Loaded " + warehouseLines.size() + " warehouses");
         } catch (IOException e) {
-            System.out.println("⚠ Could not load warehouses file: " + e.getMessage());
+            System.out.println("Could not load warehouses file: " + e.getMessage());
             System.out.println("   Make sure the file exists at: " + warehousesFile);
         }
         
-        // Load inventory
         System.out.print("Enter inventory file path (or press Enter for default): ");
-        String inventoryFile = consoleReader.readLine().trim();
+        String inventoryFile = readConsoleLine();
         if (inventoryFile.isEmpty()) {
             inventoryFile = DEFAULT_INVENTORY_FILE;
         }
@@ -126,14 +114,13 @@ public class LogisticsApp {
             InputReader inventoryReader = new FileInputReader(inventoryFile);
             List<String> inventoryLines = inventoryReader.readLines();
             processInventoryLines(inventoryLines);
-            System.out.println("✓ Loaded " + inventoryLines.size() + " inventory items");
+            System.out.println("Loaded " + inventoryLines.size() + " inventory items");
         } catch (IOException e) {
-            System.out.println("⚠ Could not load inventory file: " + e.getMessage());
+            System.out.println("Could not load inventory file: " + e.getMessage());
         }
         
-        // Load operations
         System.out.print("Enter operations file path (or press Enter for default): ");
-        String operationsFile = consoleReader.readLine().trim();
+        String operationsFile = readConsoleLine();
         if (operationsFile.isEmpty()) {
             operationsFile = DEFAULT_OPERATIONS_FILE;
         }
@@ -142,9 +129,9 @@ public class LogisticsApp {
             InputReader operationsReader = new FileInputReader(operationsFile);
             List<String> operationLines = operationsReader.readLines();
             processOperationLines(operationLines);
-            System.out.println("✓ Processed " + operationLines.size() + " operations");
+            System.out.println("Processed " + operationLines.size() + " operations");
         } catch (IOException e) {
-            System.out.println("⚠ Could not load operations file: " + e.getMessage());
+            System.out.println("Could not load operations file: " + e.getMessage());
         }
         
         System.out.println();
@@ -161,28 +148,6 @@ public class LogisticsApp {
         }
     }
     
-    /**
-     * Helper method to convert a string like "10 kg" to a Measurement object
-     */
-    private Measurement createMeasurementFromString(String measurementStr) {
-        // Split the string into value and unit (e.g., "10 kg" -> ["10", "kg"])
-        String[] parts = measurementStr.trim().split(" ");
-        
-        if (parts.length >= 2) {
-            try {
-                double value = Double.parseDouble(parts[0]);
-                String unit = parts[1];
-                return new Measurement(value, unit);
-            } catch (NumberFormatException e) {
-                System.err.println("Error parsing measurement value: " + parts[0]);
-                return new Measurement(0, "kg");
-            }
-        } else {
-            System.err.println("Invalid measurement format: " + measurementStr);
-            return new Measurement(0, "kg");
-        }
-    }
-    
     private void processInventoryLines(List<String> lines) {
         for (String line : lines) {
             String[] parts = line.split(",", 3);
@@ -191,7 +156,7 @@ public class LogisticsApp {
                 String productName = parts[1].trim();
                 String measurementStr = parts[2].trim();
                 
-                Measurement measurement = createMeasurementFromString(measurementStr);
+                Measurement measurement = new Measurement(measurementStr);
                 Product product = new Product(productName, measurement);
                 warehouseManager.addProductToWarehouse(warehouseId, product);
             }
@@ -201,7 +166,9 @@ public class LogisticsApp {
     private void processOperationLines(List<String> lines) {
         for (String line : lines) {
             String[] parts = line.split(",");
-            if (parts.length == 0) continue;
+            if (parts.length == 0) {
+                continue;
+            }
             
             String operation = parts[0].trim();
             
@@ -221,13 +188,12 @@ public class LogisticsApp {
         
         Warehouse warehouse = warehouseManager.createWarehouse(warehouseId, warehouseName);
         
-        // Add initial products (if any)
         for (int i = 3; i < parts.length; i += 2) {
             if (i + 1 < parts.length) {
                 String productName = parts[i].trim();
                 String measurementStr = parts[i + 1].trim();
                 
-                Measurement measurement = createMeasurementFromString(measurementStr);
+                Measurement measurement = new Measurement(measurementStr);
                 Product product = new Product(productName, measurement);
                 warehouse.addProduct(product);
             }
@@ -239,13 +205,12 @@ public class LogisticsApp {
         Warehouse warehouse = warehouseManager.getWarehouseByName(warehouseName);
         
         if (warehouse != null) {
-            // Add products (pairs of name and measurement)
             for (int i = 2; i < parts.length; i += 2) {
                 if (i + 1 < parts.length) {
                     String productName = parts[i].trim();
                     String measurementStr = parts[i + 1].trim();
                     
-                    Measurement measurement = createMeasurementFromString(measurementStr);
+                    Measurement measurement = new Measurement(measurementStr);
                     Product product = new Product(productName, measurement);
                     warehouse.addProduct(product);
                 }
@@ -273,7 +238,7 @@ public class LogisticsApp {
             System.out.println("6. Exit");
             System.out.print("Choice: ");
             
-            String choice = consoleReader.readLine().trim();
+            String choice = readConsoleLine();
             
             try {
                 switch (choice) {
@@ -307,49 +272,49 @@ public class LogisticsApp {
     
     private void createWarehouseInteractive() throws IOException {
         System.out.print("Enter warehouse ID: ");
-        String id = consoleReader.readLine().trim();
+        String id = readConsoleLine();
         
         System.out.print("Enter warehouse name: ");
-        String name = consoleReader.readLine().trim();
+        String name = readConsoleLine();
         
         warehouseManager.createWarehouse(id, name);
-        System.out.println("✓ Warehouse created successfully!");
+        System.out.println("Warehouse created successfully!");
     }
     
     private void addProductInteractive() throws IOException {
         System.out.print("Enter warehouse name: ");
-        String warehouseName = consoleReader.readLine().trim();
+        String warehouseName = readConsoleLine();
         
         Warehouse warehouse = warehouseManager.getWarehouseByName(warehouseName);
         if (warehouse == null) {
-            System.out.println("✗ Warehouse not found!");
+            System.out.println("Warehouse not found!");
             return;
         }
         
         System.out.print("Enter product name: ");
-        String productName = consoleReader.readLine().trim();
+        String productName = readConsoleLine();
         
         System.out.print("Enter quantity (e.g., '10 kg'): ");
-        String quantityStr = consoleReader.readLine().trim();
+        String quantityStr = readConsoleLine();
         
-        Measurement measurement = createMeasurementFromString(quantityStr);
+        Measurement measurement = new Measurement(quantityStr);
         Product product = new Product(productName, measurement);
         warehouse.addProduct(product);
-        System.out.println("✓ Product added successfully!");
+        System.out.println("Product added successfully!");
     }
     
     private void shipProductInteractive() throws IOException {
         System.out.print("Enter source warehouse name: ");
-        String source = consoleReader.readLine().trim();
+        String source = readConsoleLine();
         
         System.out.print("Enter destination warehouse name: ");
-        String dest = consoleReader.readLine().trim();
+        String dest = readConsoleLine();
         
         System.out.print("Enter product name: ");
-        String productName = consoleReader.readLine().trim();
+        String productName = readConsoleLine();
         
         System.out.print("Enter quantity to ship (e.g., '8 kg'): ");
-        String quantity = consoleReader.readLine().trim();
+        String quantity = readConsoleLine();
         
         ShipmentRecord record = shipmentProcessor.processShipment(source, dest, productName, quantity);
         
@@ -360,13 +325,13 @@ public class LogisticsApp {
     private void viewInventory() {
         System.out.println("\n=== Warehouse Inventories ===");
         
-        for (Warehouse warehouse : warehouseManager.getAllWarehouses().values()) {
+        for (Warehouse warehouse : warehouseManager.getAllWarehouses()) {
             System.out.println("\n" + warehouse.getName() + ":");
             
-            if (warehouse.getInventory().isEmpty()) {
+            if (warehouse.inventoryItems().isEmpty()) {
                 System.out.println("  (empty)");
             } else {
-                for (Product product : warehouse.getInventory()) {
+                for (Product product : warehouse.inventoryItems()) {
                     System.out.println("  - " + product.toString());
                 }
             }
@@ -381,19 +346,19 @@ public class LogisticsApp {
         System.out.println("4. All Reports");
         System.out.print("Choice: ");
         
-        String choice = consoleReader.readLine().trim();
+        String choice = readConsoleLine();
         
         System.out.println("Output to:");
         System.out.println("1. Console");
         System.out.println("2. File");
         System.out.print("Choice: ");
         
-        String outputChoice = consoleReader.readLine().trim();
+        String outputChoice = readConsoleLine();
         
         OutputWriter writer;
         if (outputChoice.equals("2")) {
             System.out.print("Enter filename: ");
-            String filename = consoleReader.readLine().trim();
+            String filename = readConsoleLine();
             writer = new FileOutputWriter(filename);
         } else {
             writer = new ConsoleOutputWriter();
@@ -402,27 +367,42 @@ public class LogisticsApp {
         switch (choice) {
             case "1":
                 reportGenerator.generateShipmentReport(shipmentProcessor, writer);
-                System.out.println("✓ Shipment report generated");
+                System.out.println("Shipment report generated");
                 break;
             case "2":
                 reportGenerator.generateWarehouseList(warehouseManager, writer);
-                System.out.println("✓ Warehouse list generated");
+                System.out.println("Warehouse list generated");
                 break;
             case "3":
                 reportGenerator.generateInventoryList(warehouseManager, writer);
-                System.out.println("✓ Inventory list generated");
+                System.out.println("Inventory list generated");
                 break;
             case "4":
-                reportGenerator.generateShipmentReport(shipmentProcessor, 
-                    new FileOutputWriter("output/Report.txt"));
-                reportGenerator.generateWarehouseList(warehouseManager, 
-                    new FileOutputWriter("output/Warehouses_out.txt"));
-                reportGenerator.generateInventoryList(warehouseManager, 
-                    new FileOutputWriter("output/Inventory_out.txt"));
-                System.out.println("✓ All reports generated to 'output' folder");
+                reportGenerator.generateShipmentReport(
+                    shipmentProcessor,
+                    new FileOutputWriter("output/Report.txt")
+                );
+                reportGenerator.generateWarehouseList(
+                    warehouseManager,
+                    new FileOutputWriter("output/Warehouses_out.txt")
+                );
+                reportGenerator.generateInventoryList(
+                    warehouseManager,
+                    new FileOutputWriter("output/Inventory_out.txt")
+                );
+                System.out.println("All reports generated to 'output' folder");
                 break;
             default:
                 System.out.println("Invalid choice");
         }
     }
+
+    private String readConsoleLine() throws IOException {
+        String line = consoleReader.readLine();
+        return line == null ? "" : line.trim();
+    }
 }
+
+    
+    
+
