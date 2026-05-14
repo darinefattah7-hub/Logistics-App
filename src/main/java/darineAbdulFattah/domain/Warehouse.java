@@ -1,21 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package darineAbdulFattah.domain;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
-/**
- *
- * @author USER
- */
 public class Warehouse {
     
-      private ProductList inventory;
+    private ProductList inventory;
     private ProductList shipment;
     private String id;
+    private String name;
 
     public String getId() {
         return id;
@@ -24,39 +18,26 @@ public class Warehouse {
     public String getName() {
         return name;
     }
-    private String name;
     
-    public Warehouse() {
+    public Warehouse(String id, String name) {
+        this.id = id;
+        this.name = name;
         this.inventory = new ProductList();
         this.shipment = new ProductList();
     }
     
-    public Warehouse(String id, String name) {
-    this.id = id;
-    this.name = name;
-    this.inventory = new ProductList();
-    this.shipment = new ProductList();
-}
-    
     public void shipProduct(String productName) {
-        // Search for product in inventory
         Iterator<Product> iterator = inventory.iterator();
         
         while (iterator.hasNext()) {
             Product product = iterator.next();
             
-            if (product.getName().equalsIgnoreCase(productName)) {
-                // Remove from inventory
+            if (product.hasName(productName)) {
                 iterator.remove();
-                
-                // Add to shipment
                 shipment.add(product);
-                
-                return; // Product found and shipped
+                return;
             }
         }
-        
-        // Product not found - do nothing
     }
     
     public void sortInventory() {
@@ -64,22 +45,37 @@ public class Warehouse {
     }
     
     public void displayShipped() {
-        // Use for-each iteration (not index-based)
         for (Product product : shipment) {
             System.out.println(product);
         }
     }
     
-    // Package-private accessors for warehouse management
-    public ProductList getInventory() {
-        return inventory;
+    public List<Product> inventoryItems() {
+        return Collections.unmodifiableList(inventory);
     }
     
-   public ProductList getShipment() {
-        return shipment;
+    public List<Product> shipmentItems() {
+        return Collections.unmodifiableList(shipment);
     }
-   public void addProduct(Product product) {
-    inventory.add(product);
-}
-    
+
+    public void addProduct(Product product) {
+        inventory.add(product);
+    }
+
+    public Product findProduct(String productName) {
+        return inventory.findByName(productName);
+    }
+
+    public Product removeProduct(String productName) {
+        return inventory.removeByName(productName);
+    }
+
+    public void addShippedProduct(Product product) {
+        shipment.add(product);
+    }
+
+    @Override
+    public String toString() {
+        return id + "," + name;
+    }
 }
