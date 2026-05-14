@@ -1,6 +1,6 @@
-=============================================================================
+
 WAREHOUSE LOGISTICS SYSTEM - COMPLETE PROJECT
-=============================================================================
+
 
 Student: Darine Abdul Fattah
 Course: Object Oriented Programming 1 [PROG 211-EC10]
@@ -10,44 +10,66 @@ Deadline: 17/05/2026
 This project has been fully implemented according to the PDF requirements
 (pages 1-6) and is ready for submission after you update the package name.
 
-=============================================================================
+
+
 WHAT'S INCLUDED
-=============================================================================
 
  DOMAIN LAYER (Quiz Classes - Mandatory Reuse)
    ✓ Adjustable.java - Interface for adjustable objects
+   
    ✓ Measurement.java - Quantity with unit (2 constructors, aggregation)
+   
    ✓ Product.java - Product with auto-ID, implements Comparable
+   
    ✓ ProductList.java - ArrayList that aggregates duplicates
+   
    ✓ Warehouse.java - Manages inventory and shipments
 
  I/O LAYER (Interface-Based Abstraction)
    ✓ InputReader.java - Interface for input
+   
    ✓ OutputWriter.java - Interface for output
+   
    ✓ FileInputReader.java - Reads from files (try-catch exception handling)
+   
    ✓ FileOutputWriter.java - Writes to files (try-catch exception handling)
+   
    ✓ ConsoleInputReader.java - Reads from console
+   
    ✓ ConsoleOutputWriter.java - Writes to console
 
  PROCESSING LAYER (Business Logic)
-   ✓ WarehouseManager.java - Manages multiple warehouses
+
+
+   ✓ WarehouseManager.java - Manages multiple warehouse
+   
    ✓ ShipmentProcessor.java - Processes shipments with status tracking
+   
    ✓ ShipmentRecord.java - Records shipment details (has nested enum)
+   
    ✓ ReportGenerator.java - Generates all reports
+   
 
  APPLICATION LAYER
    ✓ Main.java - Main application with menu-driven interface
+   
    ✓ PDFScenarioRunner.java - Runs exact PDF scenario for testing
+   
    ✓ ProjectTest.java - Comprehensive test suite
 
  INPUT FILES (Sample Data from PDF)
+ 
    ✓ warehouses.txt - Initial warehouses
+   
    ✓ inventory.txt - Initial inventory
+   
    ✓ operations.txt - Operations to process
 
  DOCUMENTATION
    ✓ PROJECT_VERIFICATION.txt - Requirements checklist
+   
    ✓ FINAL_VERIFICATION.txt - Complete verification against PDF
+   
    ✓ README.txt - This file
 
 
