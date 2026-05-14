@@ -3,6 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package darineAbdulFattah.processing;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
  import darineAbdulFattah.domain.Product;
@@ -34,6 +36,9 @@ public class WarehouseManager {
      * @return the created warehouse
      */
     public Warehouse createWarehouse(String id, String name) {
+        if (warehouses.containsKey(id)) {
+            return warehouses.get(id);
+        }
         Warehouse warehouse = new Warehouse(id, name);
         warehouses.put(id, warehouse);
         return warehouse;
@@ -75,8 +80,8 @@ public class WarehouseManager {
      * Gets all warehouses
      * @return map of warehouse ID to warehouse
      */
-    public Map<String, Warehouse> getAllWarehouses() {
-        return warehouses;
+    public Collection<Warehouse> getAllWarehouses() {
+        return Collections.unmodifiableCollection(warehouses.values());
     }
     
     /**
